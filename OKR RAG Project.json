@@ -1,0 +1,402 @@
+{
+  "name": "OKR RAG Project",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -576,
+        64
+      ],
+      "id": "2caf6a5c-ed78-471d-8680-213e49cde04d",
+      "name": "Telegram Trigger",
+      "webhookId": "d950ef50-c145-45ba-8d4d-3c2bfcb6e68e",
+      "credentials": {
+        "telegramApi": {
+          "id": "78XHgSEEvcFon1AD",
+          "name": "Telegram account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d8403524-7ba3-42d7-a72e-0a5776389cc8"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "175beb02-62cf-40a6-bee7-e9e47f046866",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEquals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -368,
+        64
+      ],
+      "id": "a137e382-e250-4dcb-97f6-3cc80c8c035e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "text": "=Halo! Saya adalah AI Asisten OKR Petik. Saya memiliki akses ke data target dan progres (Q1 - Q4) \n\nSilakan tanyakan hal seperti:\n- Berapa persen pencapaian Key Result 1 di Q2?\n- Rangkumkan target OKR untuk Tim Layanan Pelanggan!\n\nTanyakan kepada bot sekarang!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        -160
+      ],
+      "id": "7b2f10f2-f656-4f6a-8fcb-f76580358b71",
+      "name": "Send a text message",
+      "webhookId": "df0bfd6b-f74c-40b7-9047-fc4cdadb050c",
+      "credentials": {
+        "telegramApi": {
+          "id": "78XHgSEEvcFon1AD",
+          "name": "Telegram account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Kamu adalah Asisten Analis OKR (Objectives and Key Results) Senior perusahaan. Tugas utamamu adalah membantu jajaran manajemen dan eksekutif untuk melacak, menganalisis, dan merangkum pencapaian target perusahaan dengan cepat, akurat, dan profesional.\n\nBerikut adalah SELURUH DATA LENGKAP OKR PERUSAHAAN (Kuartal 1 - 4):\n=======================\n{{ $('Code in JavaScript').first().json.okr_data }}\n=======================\n\nPANDUAN UTAMA MENJAWAB:\n1. JIKA pengguna bertanya hal umum/salam/pertanyaan konseptual (contoh: \"ini tentang apa ya\", \"kamu siapa\", \"halo\"), jawab langsung secara ramah dan jelaskan bahwa kamu adalah bot asisten yang bertugas membantu menganalisis data OKR perusahaan.\n2. JIKA pengguna bertanya spesifik tentang target, data, angka, progres, kuartal (Q1-Q4), atau nama tim, KAMU WAJIB MENCARI JAWABANNYA DI DALAM DATA OKR PERUSAHAAN yang diberikan di atas.\n\nATURAN MUTLAK (DILARANG KERAS HALUSINASI):\n1. Kamu HANYA BOLEH menjawab berdasarkan data laporan OKR yang tertera di atas. JANGAN PERNAH MENGARANG JAWABAN ATAU ANGKA.\n2. Jika pengguna menanyakan data spesifik yang ternyata TIDAK ADA di dalam teks data di atas, jawab dengan tegas: \"Maaf, data terkait [sebutkan hal yang ditanya] tidak tersedia di dokumen OKR saat ini.\"\n3. Jika pengguna bertanya di luar topik pekerjaan/OKR (contoh: cuaca, berita, politik), tolak dengan sopan dan ingatkan bahwa kamu adalah Asisten OKR.\n\nPANDUAN MEMBACA DATA OKR:\nSaat mencari data di atas, perhatikan relasi teks ini: \"Tim\", \"Periode\" (Kuartal/Time Frame), \"Objective\" (Tujuan Utama), \"Key Result\" (Indikator Keberhasilan), \"Target\" (Angka/Gol), \"Aktual\" (Pencapaian saat ini), dan \"Progress\" (Persentase pencapaian).\n\nPANDUAN MENJAWAB BERDASARKAN SKENARIO PENGGUNA:\n1. SKENARIO PENCARIAN SPESIFIK (Contoh: \"Berapa progres KR 2 di Q1?\"): \n   - Langsung berikan jawaban to-the-point. Sebutkan Nama Key Result, Target, Aktual, dan Persentase Progresnya.\n\n2. SKENARIO RINGKASAN/SUMMARY (Contoh: \"Ada apa saja di OKR Q1?\" atau \"Apa OKR Tim Layanan Pelanggan?\"): \n   - Jangan memuntahkan teks panjang. Rangkumkan ke dalam bentuk bullet points per Objective.\n\n3. SKENARIO PERBANDINGAN (Contoh: \"Bandingkan progres kepuasan pelanggan Q1 dan Q2\"): \n   - Sajikan data secara berdampingan atau berurutan (Q1 vs Q2). \n   - Soroti (tebalkan/bold) perbedaan angka target vs aktual agar pengguna mudah melihat kenaikan/penurunan.\n\n4. SKENARIO ANALISIS/EVALUASI (Contoh: \"Mana Key Result yang belum mencapai target?\" atau \"Apa yang masih kurang?\"): \n   - Filter dan sebutkan hanya \"Key Result\" yang angka \"Progress\"-nya di bawah 100% atau \"Aktual\"-nya belum mencapai \"Target\". Beri label peringatan (misal: \"Needs Attention\").\n\nFORMAT KELUARAN (KHUSUS TELEGRAM):\n- Jawaban harus nyaman dibaca di layar HP. \n- Gunakan bullet points (-) atau emoji profesional (seperti 🎯, 📊, ⚠️, ✅) secukupnya.\n- Tebalkan (**bold**) nama metrik, angka persentase, dan nama Tim untuk penekanan.\n- Gunakan bahasa Indonesia yang formal, sopan, namun ringkas (ala korporat).\n\n---\nPERTANYAAN DARI PENGGUNA:\n{{ $('Telegram Trigger').first().json.message.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        608,
+        96
+      ],
+      "id": "3f3acf9e-d817-4738-baa9-f3f845af8a6e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15ZimlBi1pY6Q4AZxCx8zO4Hz6tFrlLyTKV0cNcHIVtU",
+          "mode": "list",
+          "cachedResultName": "OKR Template PeTIK 2026",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15ZimlBi1pY6Q4AZxCx8zO4Hz6tFrlLyTKV0cNcHIVtU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 337894845,
+          "mode": "list",
+          "cachedResultName": "Rekap OKR Divisi SKU",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15ZimlBi1pY6Q4AZxCx8zO4Hz6tFrlLyTKV0cNcHIVtU/edit#gid=337894845"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -208,
+        304
+      ],
+      "id": "a3003e8b-bd74-4cb9-89bd-a33fc6c2c65f",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3eqxTxT8G267QQig",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        176,
+        96
+      ],
+      "id": "f7460317-0a4d-4381-91b0-88eb71975f7d",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7e359512-98e1-4166-8866-e052272d0534",
+              "name": "user_id",
+              "value": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        96
+      ],
+      "id": "eba8b607-f9f9-4f2a-b42a-07e1890903ed",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}123"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        672,
+        320
+      ],
+      "id": "d4f3dd1f-f1bb-493e-9e67-0ac4c9d741a8",
+      "name": "Simple Memory",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nlet rawData = \"=== DOKUMEN RAW LAPORAN OKR ===\\n\";\n\nfor (const item of items) {\n    const row = item.json;\n    \n    // Mengambil HANYA isi teks dari setiap sel, membuang sel yang kosong\n    const values = Object.values(row).filter(val => val !== null && val !== undefined && val !== \"\");\n    \n    // Jika baris tersebut ada isinya, gabungkan menjadi satu kalimat\n    if (values.length > 0) {\n        rawData += values.join(\" | \") + \"\\n\";\n    }\n}\n\n// Membungkus seluruh isi dokumen menjadi 1 paket bernama 'okr_data'\nreturn [{\n    json: {\n        okr_data: rawData\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        304
+      ],
+      "id": "1b9e5848-82d4-49e9-95ec-83cc559509e7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        528,
+        320
+      ],
+      "id": "324b4305-0d3e-49b4-b5da-0cf7d5f336b5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "yKgTSZLBzldqy2fC",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        944,
+        80
+      ],
+      "id": "7eda122d-b383-40f8-afe2-02e192180b4c",
+      "name": "Send a text message2",
+      "webhookId": "387bd6ff-94d5-4b56-acd7-2e3d61a2b363",
+      "credentials": {
+        "telegramApi": {
+          "id": "78XHgSEEvcFon1AD",
+          "name": "Telegram account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9dfe22ef-91f8-4a2d-8b15-d30b41f930ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "vE9KINlNsYcYzkYV",
+  "tags": []
+}
