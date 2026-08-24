@@ -1,5 +1,7 @@
 # Telegram AI Assistant with Dynamic Data Retrieval
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/04c64378-999d-43bc-bf6c-ce5cd54ba6c0" />
+
 ## Executive Summary
 This project demonstrates an intelligent, automated Telegram bot built with **n8n**. It doesn't just chat—it routes user intents, retrieves live structured data from Google Sheets, processes it through custom JavaScript logic, and uses **Google Gemini AI** to generate context-aware responses. 
 
